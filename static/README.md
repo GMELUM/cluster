@@ -140,7 +140,7 @@ new Master((master, events) => {
 	
 }).start();
 ```
-## TypeScrypt
+## TypeScript
 Cluster and Master accept generic interfaces for both Master and Cluster.
 The user interface must extends from the prepared type.
 

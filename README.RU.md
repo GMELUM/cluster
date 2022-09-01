@@ -136,7 +136,7 @@ new Master((master, events) => {
 	
 }).start();
 ```
-## TypeScrypt
+## TypeScript
 Cluster и Master принимают интерфейсы обоих классов в дженерик.
 Пользовательский интерфейс должен расширяться из готовых `BridgeMaster` и `BridgeCluster`.
 
