@@ -19,7 +19,7 @@ interface Cluster<
     M extends BridgeMaster,
     C extends BridgeCluster,
     CT extends Record<string, Array<Record<string, any>>> = C
-    > {
+> {
     send<K extends keyof CT, V extends CT[K]>(type: K, value: V[0]): Promise<V[1]>;
     send<K extends keyof CT, V extends CT[K]>(type: K, value: V[0], callback: (data: V[1]) => void): void;
 }
@@ -28,7 +28,7 @@ class Cluster<
     M extends BridgeMaster,
     C extends BridgeCluster,
     CT extends Record<string, Array<Record<string, any>>> = C
-    > {
+> {
 
     private pid = process.pid;
     private count: number = 0;
@@ -37,11 +37,12 @@ class Cluster<
 
     private callbackEvents: TCallbackEvents<M>;
 
-    private bodyMaster: (cluster: Cluster<M, C, CT>, events: TEvents<M>) => void;
+    private bodyMaster: (cluster: Cluster<M, C, CT>, events: TEvents<M>, options: Record<string, any>) => void;
 
     constructor(callback: (
         cluster: Cluster<M, C, CT>,
-        events: TEvents<M>
+        events: TEvents<M>,
+        options: Record<string, any>
     ) => void) {
         this.bodyMaster = callback;
         process.on("message", ({ type, value, requestId }) => {
@@ -58,7 +59,7 @@ class Cluster<
         });
     }
 
-    public start = () => { this.bodyMaster(this, this.events) };
+    public start = () => this.bodyMaster(this, this.events, JSON.parse((process.env as any)?.CLUSTER_ENV || {}));
 
     events: TEvents<M> = (callback) => this.callbackEvents = callback;
 

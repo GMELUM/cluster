@@ -1,6 +1,6 @@
 {
   "name": "@elum/cluster",
-  "version": "0.0.1",
+  "version": "0.0.5",
   "description": "Promise/Callback communication between main and cluster process",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -9,11 +9,7 @@
   "contributors": [],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/GMELUM/elum-cluster.git"
-  },
-  "peerDependencies": {
-    "react": "^18 || ^17",
-    "react-dom": "^18 || ^17"
+    "url": "git+https://github.com/GMELUM/cluster.git"
   },
   "keywords": [
     "pm2",

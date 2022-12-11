@@ -1,3 +1,5 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 class Cluster {
     pid = process.pid;
     count = 0;
@@ -20,7 +22,7 @@ class Cluster {
             }
         });
     }
-    start = () => { this.bodyMaster(this, this.events); };
+    start = () => this.bodyMaster(this, this.events, JSON.parse(process.env?.CLUSTER_ENV || {}));
     events = (callback) => this.callbackEvents = callback;
     send = (type, value, callback) => callback ? this.sendCallback(type, value, callback) : this.sendPromise(type, value);
     sendPromise = (type, value) => new Promise((resolve) => {
@@ -34,4 +36,4 @@ class Cluster {
         process.send({ type, value, requestId });
     };
 }
-export default Cluster;
+exports.default = Cluster;

@@ -1,13 +1,13 @@
 import { BridgeMaster } from ".";
-export declare type BridgeCluster = {
+export type BridgeCluster = {
     "ONLINE": [{}, {}];
     "DISCONNECT": [{}, {}];
     "ERROR": [{}, {}];
     "EXIT": [{}, {}];
     "LISTENING": [{}, {}];
 };
-declare type TCallbackEvents<C extends BridgeMaster, T extends Record<string, Array<Record<string, any>>> = C> = <K extends keyof T, V extends T[K]>(type: K, value: V[0], reply?: <VALUE extends V[1]>(value: VALUE) => void) => void;
-declare type TEvents<T extends BridgeMaster> = (callback: TCallbackEvents<T>) => void;
+type TCallbackEvents<C extends BridgeMaster, T extends Record<string, Array<Record<string, any>>> = C> = <K extends keyof T, V extends T[K]>(type: K, value: V[0], reply?: <VALUE extends V[1]>(value: VALUE) => void) => void;
+type TEvents<T extends BridgeMaster> = (callback: TCallbackEvents<T>) => void;
 interface Cluster<M extends BridgeMaster, C extends BridgeCluster, CT extends Record<string, Array<Record<string, any>>> = C> {
     send<K extends keyof CT, V extends CT[K]>(type: K, value: V[0]): Promise<V[1]>;
     send<K extends keyof CT, V extends CT[K]>(type: K, value: V[0], callback: (data: V[1]) => void): void;
@@ -18,7 +18,7 @@ declare class Cluster<M extends BridgeMaster, C extends BridgeCluster, CT extend
     private callback;
     private callbackEvents;
     private bodyMaster;
-    constructor(callback: (cluster: Cluster<M, C, CT>, events: TEvents<M>) => void);
+    constructor(callback: (cluster: Cluster<M, C, CT>, events: TEvents<M>, options: Record<string, any>) => void);
     start: () => void;
     events: TEvents<M>;
     send: {

@@ -23,7 +23,7 @@ interface CustomBridgeMaster extends BridgeMaster {
 	]
 }
 
-new Cluster<CustomBridgeMaster,CustomBridgeCluster>(async (cluster, events) => {
+new Cluster<CustomBridgeMaster,CustomBridgeCluster>(async (cluster, events, options) => {
 	events((type, value, reply) => { /** *** */ })
 	const result = await cluster.send("CLUSTER_EVENTS", { title: "Cluster NodeJS" });
 	// result = { data: { access: true } }

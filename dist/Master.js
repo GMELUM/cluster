@@ -1,4 +1,9 @@
-import cluster from "node:cluster";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const node_cluster_1 = __importDefault(require("node:cluster"));
 class Master {
     workers = new Map();
     callback = {};
@@ -11,7 +16,7 @@ class Master {
         this.sendCallback(target, type, value, callback) :
         this.sendPromise(target, type, value);
     newCluster = (opt) => {
-        const worker = cluster.fork(opt);
+        const worker = node_cluster_1.default.fork({ CLUSTER_ENV: JSON.stringify(opt) });
         return worker
             .on("online", () => { this.add(worker); this.callbackEvents(worker, "ONLINE", {}); })
             .on("disconnect", () => { this.delete(worker); this.callbackEvents(worker, "DISCONNECT", {}); })
@@ -46,4 +51,4 @@ class Master {
         this.workers.delete(worker.process.pid);
     events = (callback) => this.callbackEvents = callback;
 }
-export default Master;
+exports.default = Master;

@@ -9,7 +9,7 @@
     "url": "git+https://github.com/GMELUM/elum-state.git"
   },
   "scripts": {
-    "build": "tsc && cp -r static/* ./dist",
+    "build": "tsc && xcopy /s /r /q /y .\\static\\*.* .\\dist",
     "start": "yarn build && cross-env NODE_PATH=./dist nodemon",
     "release": "git subtree push --prefix dist https://github.com/GMELUM/elum-state release"
   },

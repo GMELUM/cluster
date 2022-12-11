@@ -140,7 +140,7 @@ new Master((master, events) => {
 	
 }).start();
 ```
-## TypeScrypt
+## TypeScript
 Cluster and Master accept generic interfaces for both Master and Cluster.
 The user interface must extends from the prepared type.
 
@@ -172,7 +172,8 @@ interface CustomBridgeMaster extends BridgeMaster {
 	]
 }
 
-new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events) => {
+new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events, options) => {
+	const uuid = options.uuid; // "0000-0000-0000-0000-00000000"
 	events((type, value, reply) => ***)
 	const result = await cluster.send("CLUSTER_EVENTS", { title: "Cluster NodeJS" });
 	// result = { data: { access: true } }
@@ -180,7 +181,7 @@ new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events) => {
 
 new Master<CustomBridgeMaster,CustomBridgeCluster>((master, events) => {
     events((cluster, type, value, reply) => ***);
-    const cluster = master.newCluster();
+    const cluster = master.newCluster({uuid: "0000-0000-0000-0000-00000000"});
 	const result = await master.send(cluster, "MASTER_EVENTS", { clientId: 1 });
 	// result = { result: true }
 	

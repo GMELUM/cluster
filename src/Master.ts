@@ -6,7 +6,7 @@ export type BridgeMaster = {};
 type TCallbackEvents<
     C extends BridgeCluster,
     T extends Record<string, Array<Record<string, any>>> = C
-    > = <K extends keyof T, V extends T[K]>(cluster: Worker, type: K, value: V[0], reply?: (value: V[1]) => void) => void;
+> = <K extends keyof T, V extends T[K]>(cluster: Worker, type: K, value: V[0], reply?: (value: V[1]) => void) => void;
 
 type TEvents<T extends BridgeCluster> = (callback: TCallbackEvents<T>) => void;
 
@@ -15,9 +15,9 @@ type TDelete = (worker: Worker) => void;
 
 interface Master
     <
-    M extends BridgeMaster,
-    C extends BridgeCluster,
-    MT extends Record<string, Array<Record<string, any>>> = M
+        M extends BridgeMaster,
+        C extends BridgeCluster,
+        MT extends Record<string, Array<Record<string, any>>> = M
     > {
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0]): Promise<V[1]>;
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0], callback: (data: V[1]) => void): void;
@@ -25,9 +25,9 @@ interface Master
 
 class Master
     <
-    M extends BridgeMaster,
-    C extends BridgeCluster,
-    MT extends Record<string, Array<Record<string, any>>> = M
+        M extends BridgeMaster,
+        C extends BridgeCluster,
+        MT extends Record<string, Array<Record<string, any>>> = M
     > {
 
     public workers = new Map<number, Worker>();
@@ -50,8 +50,8 @@ class Master
         this.sendCallback(target, type, value, callback) :
         this.sendPromise(target, type, value);
 
-    public newCluster = (opt?: Record<string, string>) => {
-        const worker = cluster.fork(opt);
+    public newCluster = (opt?: Record<string, any>) => {
+        const worker = cluster.fork({ CLUSTER_ENV: JSON.stringify(opt) });
         return worker
             .on("online", () => { this.add(worker); this.callbackEvents(worker, "ONLINE", {}) })
             .on("disconnect", () => { this.delete(worker); this.callbackEvents(worker, "DISCONNECT", {}) })
