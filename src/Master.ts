@@ -22,8 +22,8 @@ interface Master
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0]): Promise<V[1]>;
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0], callback: (data: V[1]) => void): void;
 
-    sendInOrder<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0]): Promise<V[1]>;
-    sendInOrder<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0], callback: (data: V[1]) => void): void;
+    sendInOrder<K extends keyof MT, V extends MT[K]>(type: K, value: V[0]): Promise<V[1]>;
+    sendInOrder<K extends keyof MT, V extends MT[K]>(type: K, value: V[0], callback: (data: V[1]) => void): void;
 
 }
 
