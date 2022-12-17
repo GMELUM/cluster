@@ -6,12 +6,28 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const node_cluster_1 = __importDefault(require("node:cluster"));
 class Master {
     workers = new Map();
+    workersKeys = [];
     callback = {};
     count = 0;
+    iterationIndex = 0;
     callbackEvents;
     bodyMaster;
     constructor(callback) { this.bodyMaster = callback; }
     start = () => { this.bodyMaster(this, this.events); };
+    sendInOrder = (type, value, callback) => {
+        if (this.iterationIndex >= this.workersKeys.length - 1) {
+            this.iterationIndex = 0;
+        }
+        else {
+            this.iterationIndex = this.iterationIndex + 1;
+        }
+        const currentCluster = this.workersKeys[this.iterationIndex];
+        const cluster = this.workers.get(currentCluster);
+        if (cluster) {
+            return this.send(cluster, type, value, callback);
+        }
+        return this;
+    };
     send = (target, type, value, callback) => callback ?
         this.sendCallback(target, type, value, callback) :
         this.sendPromise(target, type, value);
@@ -45,10 +61,18 @@ class Master {
         this.callback[requestId] = resolve;
         target.send({ type, value, requestId });
     });
-    add = (worker) => worker.process.pid &&
-        this.workers.set(worker.process.pid, worker);
-    delete = (worker) => worker.process.pid &&
-        this.workers.delete(worker.process.pid);
+    add = (worker) => {
+        if (worker.process.pid) {
+            this.workers.set(worker.process.pid, worker);
+            this.workersKeys = Array.from(this.workers.keys());
+        }
+    };
+    delete = (worker) => {
+        if (worker.process.pid) {
+            this.workers.delete(worker.process.pid);
+            this.workersKeys = Array.from(this.workers.keys());
+        }
+    };
     events = (callback) => this.callbackEvents = callback;
 }
 exports.default = Master;

@@ -8,10 +8,10 @@ import {
 interface CustomBridgeCluster extends BridgeCluster {
 	"CLUSTER_EVENTS": [
 		{ title: string }, // request type on first index
-		{ 
+		{
 			data: {
 				access: boolean;
-			} 
+			}
 		}  // response type on second index
 	]
 }
@@ -23,16 +23,16 @@ interface CustomBridgeMaster extends BridgeMaster {
 	]
 }
 
-new Cluster<CustomBridgeMaster,CustomBridgeCluster>(async (cluster, events, options) => {
+new Cluster<CustomBridgeMaster, CustomBridgeCluster>(async (cluster, events, options) => {
 	events((type, value, reply) => { /** *** */ })
 	const result = await cluster.send("CLUSTER_EVENTS", { title: "Cluster NodeJS" });
 	// result = { data: { access: true } }
 }).start();
 
-new Master<CustomBridgeMaster,CustomBridgeCluster>(async (master, events) => {
-    events((cluster, type, value, reply) => { /** *** */ });
-    const cluster = master.newCluster();
+new Master<CustomBridgeMaster, CustomBridgeCluster>(async (master, events) => {
+	events((cluster, type, value, reply) => { /** *** */ });
+	const cluster = master.newCluster();
 	const result = await master.send(cluster, "MASTER_EVENTS", { clientId: 1 });
 	// result = { result: true }
-	
+
 }).start();

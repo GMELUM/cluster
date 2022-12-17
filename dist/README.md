@@ -172,8 +172,7 @@ interface CustomBridgeMaster extends BridgeMaster {
 	]
 }
 
-new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events, options) => {
-	const uuid = options.uuid; // "0000-0000-0000-0000-00000000"
+new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events) => {
 	events((type, value, reply) => ***)
 	const result = await cluster.send("CLUSTER_EVENTS", { title: "Cluster NodeJS" });
 	// result = { data: { access: true } }
@@ -181,7 +180,7 @@ new Cluster<CustomBridgeMaster,CustomBridgeCluster>((cluster, events, options) =
 
 new Master<CustomBridgeMaster,CustomBridgeCluster>((master, events) => {
     events((cluster, type, value, reply) => ***);
-    const cluster = master.newCluster({uuid: "0000-0000-0000-0000-00000000"});
+    const cluster = master.newCluster();
 	const result = await master.send(cluster, "MASTER_EVENTS", { clientId: 1 });
 	// result = { result: true }
 	

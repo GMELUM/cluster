@@ -21,6 +21,10 @@ interface Master
     > {
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0]): Promise<V[1]>;
     send<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0], callback: (data: V[1]) => void): void;
+
+    sendInOrder<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0]): Promise<V[1]>;
+    sendInOrder<K extends keyof MT, V extends MT[K]>(target: Worker, type: K, value: V[0], callback: (data: V[1]) => void): void;
+
 }
 
 class Master
@@ -31,8 +35,11 @@ class Master
     > {
 
     public workers = new Map<number, Worker>();
+    private workersKeys: Array<number> = [];
     private callback: Record<number, (value?: any | PromiseLike<any>) => void> = {};
     private count: number = 0;
+
+    private iterationIndex = 0;
 
     private callbackEvents: TCallbackEvents<C>;
 
@@ -44,6 +51,19 @@ class Master
     ) => void) { this.bodyMaster = callback }
 
     public start = () => { this.bodyMaster(this, this.events) };
+
+    // @ts-ignore:next-line
+    public sendInOrder = (type, value, callback) => {
+        if (this.iterationIndex >= this.workersKeys.length - 1) {
+            this.iterationIndex = 0;
+        } else { this.iterationIndex = this.iterationIndex + 1 }
+        const currentCluster = this.workersKeys[this.iterationIndex];
+        const cluster = this.workers.get(currentCluster);
+        if (cluster) {
+            return this.send(cluster, type, value, callback);
+        }
+        return this.sendInOrder(type, value, callback);
+    }
 
     // @ts-ignore:next-line
     public send = (target, type, value, callback) => callback ?
@@ -88,11 +108,19 @@ class Master
         target.send({ type, value, requestId });
     });
 
-    private add: TAdd = (worker) => worker.process.pid &&
-        this.workers.set(worker.process.pid, worker);
+    private add: TAdd = (worker) => {
+        if (worker.process.pid) {
+            this.workers.set(worker.process.pid, worker);
+            this.workersKeys = Array.from(this.workers.keys());
+        }
+    }
 
-    private delete: TDelete = (worker) => worker.process.pid &&
-        this.workers.delete(worker.process.pid);
+    private delete: TDelete = (worker) => {
+        if (worker.process.pid) {
+            this.workers.delete(worker.process.pid);
+            this.workersKeys = Array.from(this.workers.keys());
+        }
+    }
 
     private events: TEvents<C> = (callback) =>
         this.callbackEvents = callback;
