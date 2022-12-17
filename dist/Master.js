@@ -26,7 +26,7 @@ class Master {
         if (cluster) {
             return this.send(cluster, type, value, callback);
         }
-        return this;
+        return this.sendInOrder(type, value, callback);
     };
     send = (target, type, value, callback) => callback ?
         this.sendCallback(target, type, value, callback) :
